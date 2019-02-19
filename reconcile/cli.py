@@ -10,6 +10,7 @@ import reconcile.openshift_rolebinding
 import reconcile.quay_membership
 import reconcile.quay_repos
 import reconcile.ldap_users
+import reconcile.summary_report
 
 from reconcile.aggregated_list import RunnerException
 
@@ -19,6 +20,7 @@ services = {
     'quay-membership': reconcile.quay_membership,
     'quay-repos': reconcile.quay_repos,
     'ldap-users': reconcile.ldap_users,
+    'summary': reconcile.summary_report,
 }
 
 

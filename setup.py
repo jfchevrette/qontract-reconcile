@@ -25,6 +25,7 @@ setup(
         "hvac>=0.7.0,<0.8.0",
         "ldap3==2.5.2",
         "python-gitlab==1.7.0",
+        "Jinja2==2.10",
     ],
 
     test_suite="tests",
