@@ -1,6 +1,6 @@
 import tempfile
 from dataclasses import dataclass
-from typing import Iterable, Optional, Union
+from typing import Any, Iterable, Optional, Union
 
 from terrascript import Terrascript, Terraform, Resource, Output, Backend
 from terrascript import provider
@@ -26,7 +26,7 @@ class CloudflareAccountConfig:
 
     name: str
     email: str
-    api_key: str
+    api_token: str
     account_id: str
 
 
@@ -62,7 +62,7 @@ def create_cloudflare_terrascript(
 
     terrascript += provider.cloudflare(
         email=account_config.email,
-        api_key=account_config.api_key,
+        api_token=account_config.api_token,
         account_id=account_config.account_id,
     )
 

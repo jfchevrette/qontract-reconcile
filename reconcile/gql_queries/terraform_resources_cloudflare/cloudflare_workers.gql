@@ -1,0 +1,22 @@
+# qenerate: plugin=pydantic_v1
+
+query CloudflareWorkers {
+  workers: cloudflare_workers_v1 {
+    zone {
+      name
+      account {
+        name
+      }
+    }
+    name
+    pattern
+    script {
+      name
+      content_from_github {
+        repo
+        path
+        ref
+      }
+    }
+  }
+}

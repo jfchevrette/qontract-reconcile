@@ -1,7 +1,13 @@
 from typing import Union
 
 from terrascript import Resource, Output
-from terrascript.resource import cloudflare_zone, cloudflare_zone_settings_override
+from terrascript.resource import (
+    cloudflare_record,
+    cloudflare_worker_route,
+    cloudflare_worker_script,
+    cloudflare_zone,
+    cloudflare_zone_settings_override,
+)
 
 from reconcile.utils.external_resource_spec import ExternalResourceSpec
 from reconcile.utils.external_resources import ResourceValueResolver
@@ -23,10 +29,56 @@ def create_cloudflare_terrascript_resource(
 
     if resource_type == "cloudflare_zone":
         return CloudflareZoneTerrascriptResource(spec).populate()
+    elif resource_type == "cloudflare_record":
+        return CloudflareRecordTerrascriptResource(spec).populate()
+    elif resource_type == "cloudflare_worker":
+        return CloudflareWorkerTerrascriptResource(spec).populate()
     else:
         raise UnsupportedCloudflareResourceError(
             f"The resource type {resource_type} is not supported"
         )
+
+
+class CloudflareRecordTerrascriptResource(TerrascriptResource):
+    """Generate a cloudflare_record."""
+
+    def populate(self) -> list[Union[Resource, Output]]:
+
+        values = ResourceValueResolver(self._spec).resolve()
+        zone_id = values.pop("zone_id")
+        record_values = values
+        record_values["zone_id"] = f"${{cloudflare_zone.{zone_id}.id}}"
+        record_values["depends_on"] = [f"cloudflare_zone.{zone_id}"]
+        record = cloudflare_record(self._spec.identifier, **record_values)
+
+        return [record]
+
+
+class CloudflareWorkerTerrascriptResource(TerrascriptResource):
+    """Generate a cloudflare_worker."""
+
+    def populate(self) -> list[Union[Resource, Output]]:
+
+        values = ResourceValueResolver(self._spec).resolve()
+        zone_id = values.pop("zone_id")
+
+        worker_script_name = values.pop("script_name")
+        worker_script_content = values.pop("script_content")
+        worker_script_values = {
+            "name": worker_script_name,
+            "content": worker_script_content,
+        }
+        worker_script = cloudflare_worker_script(
+            self._spec.identifier, **worker_script_values
+        )
+
+        worker_values = values
+        worker_values["script_name"] = worker_script_name
+        worker_values["zone_id"] = f"${{cloudflare_zone.{zone_id}.id}}"
+        worker_values["depends_on"] = [f"cloudflare_zone.{zone_id}"]
+        worker = cloudflare_worker_route(self._spec.identifier, **worker_values)
+
+        return [worker, worker_script]
 
 
 class CloudflareZoneTerrascriptResource(TerrascriptResource):

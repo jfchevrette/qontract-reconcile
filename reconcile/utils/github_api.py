@@ -46,3 +46,5 @@ class GithubApi:
             return self.repo.get_contents(path, ref).decoded_content
         except github.UnknownObjectException:
             return None
+        except github.GithubException:
+            return None

@@ -1,0 +1,17 @@
+# qenerate: plugin=pydantic_v1
+
+query CloudflareRecords {
+  records: cloudflare_records_v1 {
+    zone {
+      name
+      account {
+        name
+      }
+    }
+    name
+    type
+    ttl
+    value
+    proxied
+  }
+}

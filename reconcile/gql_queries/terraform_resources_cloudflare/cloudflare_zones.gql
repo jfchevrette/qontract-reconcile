@@ -1,0 +1,13 @@
+# qenerate: plugin=pydantic_v1
+
+query CloudflareZones {
+  zones: cloudflare_zones_v1 {
+    account {
+      name
+    }
+    name
+    plan
+    type
+    settings
+  }
+}
